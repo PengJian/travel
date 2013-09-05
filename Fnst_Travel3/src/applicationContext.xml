@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	                    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+   <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+	   <property name="driverClass">
+	          <value>org.h2.Driver</value>
+	    </property>  
+	   <property name="jdbcUrl">
+	        <value>jdbc:h2:~/db_travel</value>
+	    </property>  
+	   <property name="user"><value>root</value></property>  
+	   <property name="password"><value>123</value></property>
+	   <property name="minPoolSize"><value>5</value></property> 
+	   <property name="maxPoolSize"><value>60</value></property>
+	   <property name="initialPoolSize"><value>5</value></property>
+	   <property name="maxIdleTime"><value>60</value></property>
+	   <property name="acquireIncrement"><value>5</value></property>
+	   <property name="maxStatements"><value>100</value></property>
+	   <property name="idleConnectionTestPeriod"><value>60</value></property> 
+	   <property name="acquireRetryAttempts"><value>30</value></property> 
+  </bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configLocation"
+			value="classpath:hibernate.cfg.xml">
+	   </property>
+	   <property name="dataSource" ref="dataSource">
+	   </property>
+	</bean>
+	
+		<!-- 配置事务管理器 -->
+ 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+ 		<property name="sessionFactory">
+ 			<ref local="sessionFactory"/>
+ 		</property>
+ 	</bean>
+ 	
+ 	<!-- 配置事务的传播特性 -->
+ 	<tx:advice id="txAdvice" transaction-manager="transactionManager" >
+ 		<tx:attributes>
+ 		    <tx:method name="*" propagation="REQUIRED"/>
+ 			<!--<tx:method name="add*" propagation="REQUIRED"/>
+ 			<tx:method name="del*" propagation="REQUIRED"/>
+ 			<tx:method name="update*" propagation="REQUIRED"/>
+ 			<tx:method name="submit*" propagation="REQUIRED"/>
+ 			-->
+ 			<tx:method name="find*" read-only="true"/>
+ 			<tx:method name="search*" read-only="true"/>
+ 		</tx:attributes>
+ 	</tx:advice>
+ 	
+ 	<!-- 配置哪些类哪些方法使用事务 -->
+ 	<aop:config>
+ 		<aop:pointcut id="allServiceMethod" expression="execution(* com.fnst.travel.service.*.*(..))"/>
+ 		<aop:advisor advice-ref="txAdvice" pointcut-ref="allServiceMethod"/>
+ 	</aop:config>
+	
+	<bean id="employeeManager" class="com.fnst.travel.service.impl.EmployeeManageImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="familyManager" class="com.fnst.travel.service.impl.FamilyManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="travelBathManager" class="com.fnst.travel.service.impl.TravelBatchManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	   
+	</bean>
+	
+	<bean id="aclManager" class="com.fnst.travel.service.impl.ACLManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="employeeRouteManager" class="com.fnst.travel.service.impl.EmployeeRouteManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="travelDetailManager" class="com.fnst.travel.service.impl.TravelDetailManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="travelYearManager" class="com.fnst.travel.service.impl.TravelYearManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	   <property name="travelBathManager" ref="travelBathManager"></property>   
+	</bean>
+	
+	<bean id="travelRouteManager" class="com.fnst.travel.service.impl.TravelRouteManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="userManager" class="com.fnst.travel.service.impl.UserManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="logManager" class="com.fnst.travel.service.impl.LogManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="applyTimeManager" class="com.fnst.travel.service.impl.ApplyTimeManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="expenseManager" class="com.fnst.travel.service.impl.ExpenseManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="EmployeeAction" class="com.fnst.travel.web.action.EmployeeAction" scope="prototype">
+	   <property name="employeeManager" ref="employeeManager"></property>
+	</bean>
+	
+	<bean id="UserAction" class="com.fnst.travel.web.action.UserAction" scope="prototype">
+       <property name="userManager" ref="userManager"></property>
+    </bean>
+	
+	<bean id="YearthAction" class="com.fnst.travel.web.action.YearthAction" scope="prototype">
+	   <property name="travelYearManager" ref="travelYearManager"></property>
+	</bean>
+	
+	<bean id="BatchAction" class="com.fnst.travel.web.action.BatchAction" scope="prototype">
+	   <property name="travelBathManager" ref="travelBathManager"></property>
+	   <property name="travelRouteManager" ref="travelRouteManager"></property>
+	</bean>
+	
+	<bean id="IntentionAction" class="com.fnst.travel.web.action.IntentionAction" scope="prototype">
+       <property name="travelBathManager" ref="travelBathManager"></property>
+       <property name="employeeManager" ref="employeeManager"></property>
+       <property name="travelYearManager" ref="travelYearManager"></property>
+       <property name="logManager" ref="logManager"></property>
+    </bean>
+	
+	<bean id="RouteAction" class="com.fnst.travel.web.action.RouteAction" scope="prototype">
+	   <property name="travelRouteManager" ref="travelRouteManager"></property>
+	    <property name="travelBathManager" ref="travelBathManager"></property>
+	</bean>
+	
+	<bean id="FamilyAction" class="com.fnst.travel.web.action.FamilyAction" scope="prototype">
+       <property name="familyManager" ref="familyManager"></property>
+    </bean>
+	
+	<bean id="MyFunction" class="com.fnst.travel.util.MyFunction">
+	   <property name="travelBathManager" ref="travelBathManager"></property>
+	   <property name="applyTimeManager" ref="applyTimeManager"></property>
+	</bean>
+	
+	<bean id="FrontLoginAction" class="com.fnst.travel.web.action.FrontLoginAction" scope="prototype">
+	   <property name="employeeManager" ref="employeeManager"></property>
+	   <property name="employeeRouteManager" ref="employeeRouteManager"></property>
+	   <property name="logManager" ref="logManager"></property>
+	</bean>
+	<bean id="BackLoginAction" class="com.fnst.travel.web.action.BackLoginAction" scope="prototype">
+	   <property name="userManager" ref="userManager"></property>
+	   <property name="logManager" ref="logManager"></property>
+	   <property name="applyTimeManager" ref="applyTimeManager"></property>
+	</bean>
+	<bean id="RouteDetailAction" class="com.fnst.travel.web.action.RouteDetailAction" scope="prototype">
+       <property name="travelDetailManager" ref="travelDetailManager"></property>
+       <property name="travelRouteManager" ref="travelRouteManager"></property>
+    </bean>
+    
+    <bean id="ApplyAction" class="com.fnst.travel.web.action.ApplyAction" scope="prototype">
+       <property name="employeeRouteManager" ref="employeeRouteManager"></property>
+       <property name="logManager" ref="logManager"></property>
+       <property name="applyTimeManager" ref="applyTimeManager"></property>
+    </bean>
+    
+     <bean id="EmployeeRouteAction" class="com.fnst.travel.web.action.EmployeeRouteAction" scope="prototype">
+       <property name="employeeRouteManager" ref="employeeRouteManager"></property>
+       <property name="familyManager" ref="familyManager"></property> 
+       <property name="travelRouteManager" ref="travelRouteManager"></property>          
+    </bean>
+    
+     <bean id="ExpenseAction" class="com.fnst.travel.web.action.ExpenseAction" scope="prototype">
+       <property name="expenseManager" ref="expenseManager"></property>
+       <property name="travelRouteManager" ref="travelRouteManager"></property>          
+    </bean>
+    
+	</beans>

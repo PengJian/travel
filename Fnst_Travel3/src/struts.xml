@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+ <package name="front" extends="struts-default" namespace="/front">
+ <interceptors>
+         <interceptor name="authInterceptor" class="com.fnst.travel.action.interceptor.AuthInterceptor"></interceptor>
+         <interceptor-stack name="globalInterceptor">
+           <interceptor-ref name="authInterceptor"></interceptor-ref>		
+           <interceptor-ref name="defaultStack"></interceptor-ref>
+         </interceptor-stack>
+ </interceptors>
+    
+ <default-interceptor-ref name="globalInterceptor"></default-interceptor-ref>
+ 
+ <global-results>
+     <result name="pub_exception">/common/exception.jsp</result>
+     <result name="common_exception">/common/common_exception.jsp</result>
+     <result name="pub_add">/common/pub_add_success.jsp</result>
+     <result name="pub_del">/common/pub_del_success.jsp</result>
+     <result name="pub_update">/common/pub_update_success.jsp</result>
+     <result name="pub_import">/common/pub_import_success.jsp</result>
+     <result name="pub_setstatus">/common/pub_setstatus_success.jsp</result>
+     <result name="to_login"  type="redirect">/login.jsp</result>
+   </global-results>
+    <global-exception-mappings>
+      <exception-mapping result="pub_exception" exception="com.fnst.travel.exception.SystemException"></exception-mapping>
+      <exception-mapping result="common_exception" exception="java.lang.Exception"></exception-mapping>
+    </global-exception-mappings>
+   
+  <action name="apply" class="ApplyAction" method="apply" >
+  </action>
+  <action name="applyOut" class="ApplyAction" method="applyOut" >
+  </action>
+  
+   <action name="listResult" class="ApplyAction" method="listResult" >
+   <result name="to_result">/front/result.jsp</result>
+  </action>
+  
+ 
+   <action name="getCurrentTime" class="ApplyAction" method="getCurrentTime" >
+  </action>
+  
+   <action name="loadRoute" class="ApplyAction" method="loadRoute" >
+  </action>
+
+  
+   <action name="selectResult" class="ApplyAction" method="selectResult" >
+    <result name="to_result">/front/result.jsp</result>
+  </action>
+  
+    <action name="updatePwd" class="FrontLoginAction" method="updatePwd" >
+    <result name="to_login"  type="redirect">/login.jsp</result>
+  </action>
+  
+   <action name="login" class="FrontLoginAction" method="login">
+     <result name="to_login">/login.jsp</result>
+     <result name="to_index">/index.jsp</result>
+     <result name="to_help">/front/help.jsp</result>
+     <result name="to_updatePwd">/front/updatePassword.jsp</result>
+  </action>
+  
+   <action name="logout" class="FrontLoginAction" method="logout">
+     <result name="to_login">/login.jsp</result>
+  </action>
+  
+  <action name="addInputFamily" class="FamilyAction" method="addInput">
+     <result name="to_input">/family/add_input.jsp</result>
+  </action>
+  
+  <action name="*Family" class="FamilyAction" method="{1}">
+     <result name="to_list">/front/acount.jsp</result>
+     <result name="to_input">/family/add_input.jsp</result>
+     <result name="to_update">/family/update_input.jsp</result>
+  </action>
+  
+  <action name="findRouteDetail" class="RouteDetailAction" method="find">
+  </action>
+  
+  <action name="updateInfo" class="EmployeeAction" method="updateInfo">
+  </action>
+  
+  <action name="*Intention" class="IntentionAction" method="{1}">
+     <result name="to_list">/intention.jsp</result>
+  </action>
+  
+  </package>
+  
+  
+ <package name="back" extends="struts-default" namespace="/back">
+ 
+ <interceptors>
+         <interceptor name="authInterceptor" class="com.fnst.travel.action.interceptor.AuthInterceptor"></interceptor>
+         <interceptor-stack name="globalInterceptor">
+           <interceptor-ref name="authInterceptor"></interceptor-ref>		
+           <interceptor-ref name="defaultStack"></interceptor-ref>
+         </interceptor-stack>
+ </interceptors>
+    
+ <default-interceptor-ref name="globalInterceptor"></default-interceptor-ref>
+ 
+   <global-results>
+     <result name="pub_exception">/common/exception.jsp</result>
+     <result name="common_exception">/common/common_exception.jsp</result>
+     <result name="pub_add">/common/pub_add_success.jsp</result>
+     <result name="pub_del">/common/pub_del_success.jsp</result>
+     <result name="pub_reset">/common/pub_reset_success.jsp</result>
+     <result name="pub_update">/common/pub_update_success.jsp</result>
+     <result name="pub_import">/common/pub_import_success.jsp</result>
+     <result name="pub_setstatus">/common/pub_setstatus_success.jsp</result>
+     <result name="to_login"  type="redirect">/back/login.jsp</result>
+   </global-results>
+   
+    <global-exception-mappings>
+      <exception-mapping result="pub_exception" exception="com.fnst.travel.exception.SystemException"></exception-mapping>
+      <exception-mapping result="common_exception" exception="java.lang.Exception"></exception-mapping>
+    </global-exception-mappings>
+    
+    
+   <action name="login" class="BackLoginAction" method="login">
+     <result name="to_login">/back/login.jsp</result>
+     <result name="to_index">/back/index.jsp</result>
+  </action>
+    
+    <action name="logout" class="BackLoginAction" method="logout">
+     <result name="to_login">/back/login.jsp</result>
+  </action>
+  
+    <action name="searchAllLog" class="BackLoginAction" method="searchAllLog">
+     <result name="to_logindex">/userlog/index.jsp</result>
+  </action>
+    
+   <action name="selectUserLog" class="BackLoginAction" method="selectUserLog">
+     <result name="to_logindex">/userlog/index.jsp</result>
+  </action>
+     
+    <action name="toSetApplyTime" class="BackLoginAction" method="toSetApplyTime">
+     <result name="to_settime">/applymsg/time.jsp</result>
+  </action>
+   
+   <action name="setApplyTime" class="BackLoginAction" method="setApplyTime">
+  </action>
+    
+    
+   <action name="*EmployeeRoute" class="EmployeeRouteAction" method="{1}">
+     <result name="to_activelist">/applymsg/index.jsp</result>
+  </action>
+    
+    <action name="*Employee" class="EmployeeAction" method="{1}">
+     <result name="to_list">/employee/index.jsp</result>
+     <result name="to_input">/employee/add_input.jsp</result>
+     <result name="to_update">/employee/update_input.jsp</result>
+     <result name="to_import">/employee/import.jsp</result>
+  </action>
+  
+  <action name="*Yearth" class="YearthAction" method="{1}">
+     <result name="to_list">/yearth/index.jsp</result>
+     <result name="to_input">/yearth/add_input.jsp</result>
+     <result name="to_update">/yearth/update_input.jsp</result>
+     <result name="to_select">/yearth/select_yearth.jsp</result>
+     <result name="to_intention">/yearth/intention.jsp</result>
+  </action>
+  
+  <action name="*Batch" class="BatchAction" method="{1}">
+     <result name="to_list">/batch/index.jsp</result>
+     <result name="to_input">/batch/add_input.jsp</result>
+     <result name="to_update">/batch/update_input.jsp</result>
+     <result name="to_select">/batch/select_batch.jsp</result>
+     <result name="set_status">/batch/set_status.jsp</result>
+     <result name="to_onebatch">/route/one_batch.jsp</result>
+  </action>
+  <action name="*User" class="UserAction" method="{1}">
+     <result name="to_list">/user/index.jsp</result>
+     <result name="to_input">/user/add_input.jsp</result>
+     <result name="to_update">/user/update_input.jsp</result>
+  </action>
+  <action name="*Route" class="RouteAction" method="{1}">
+     <result name="to_list">/route/index.jsp</result>
+     <result name="to_input">/route/add_input.jsp</result>
+     <result name="to_update">/route/update_input.jsp</result>
+     <result name="to_onebatch">/route/one_batch.jsp</result>
+  </action>
+  
+   <action name="*Expense" class="ExpenseAction" method="{1}">
+     <result name="to_list">/applymsg/expense.jsp</result>
+  </action>
+  
+  <action name="*RouteDetail" class="RouteDetailAction" method="{1}">
+     <result name="to_list">/routedetail/index.jsp</result>
+     <result name="to_update">/route/input_detail.jsp</result>
+  </action>
+  
+
+  
+ </package>
+ 
+   
+  
+</struts>    

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="XdocletTest系统构建脚本" default="生成hibernate映射文件" basedir=".">
+
+ 
+
+   <property name="src.dir" value="${basedir}/src"/>
+   
+   <property name="entity.dir" value="${src.dir}/com/fnst/travel/model"></property>
+	
+   <property name="xdoclet.home" value="D:\Xdoclet 以及文档\xdoclet-plugins-dist-1.0.4"/>
+   
+
+   <!-- Build classpath -->
+
+   <path id="xdoclet.task.classpath">
+
+         <fileset dir="${xdoclet.home}/lib">
+
+         <include name="**/*.jar"/>
+
+         </fileset>
+     
+   </path>
+
+	<taskdef name="xdoclet"
+     classname="org.xdoclet.ant.XDocletTask" 
+	 classpathref="xdoclet.task.classpath" 
+    
+	/>
+		
+	
+    <target name="生成Hibernate配置文件" > 
+    	       
+       <xdoclet encoding="utf-8">
+    
+           <fileset dir="${entity.dir}">
+
+              <include name="**/*.java"/>
+
+           </fileset>    
+       	
+       	
+           <component
+
+              classname="org.xdoclet.plugin.hibernate.HibernateConfigPlugin"
+
+              destdir="${src.dir}"
+
+              version="3.0"
+
+              hbm2ddlauto="update"
+
+              jdbcurl="jdbc:h2:tcp://127.0.0.1:9092/~/db_travel"
+
+              jdbcdriver="org.h2.Driver"
+
+              jdbcusername="root"
+
+              jdbcpassword="123"
+
+              dialect="org.hibernate.dialect.MySQLDialect"
+
+              showsql="true"
+           	  
+           />
+
+       </xdoclet>
+
+    </target>
+
+    <target  name="生成hibernate映射文件">
+
+       <xdoclet encoding="utf-8">
+
+           <fileset dir="${entity.dir}">
+
+              <include name="**/*.java"/>
+
+           </fileset>
+
+           <component
+
+              classname="org.xdoclet.plugin.hibernate.HibernateMappingPlugin"
+
+              version="3.0"
+
+              destdir="${src.dir}"
+              
+           />
+
+       </xdoclet>
+
+    </target>
+
+</project>

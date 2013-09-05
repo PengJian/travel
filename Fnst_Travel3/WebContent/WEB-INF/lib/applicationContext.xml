@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	                    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configLocation"
+			value="/WEB-INF/hibernate.cfg.xml">
+	   </property>
+	</bean>
+	
+		<!-- 配置事务管理器 -->
+ 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+ 		<property name="sessionFactory">
+ 			<ref local="sessionFactory"/>
+ 		</property>
+ 	</bean>
+ 	
+ 	<!-- 配置事务的传播特性 -->
+ 	<tx:advice id="txAdvice" transaction-manager="transactionManager" >
+ 		<tx:attributes>
+ 		    <tx:method name="*" propagation="REQUIRED"/>
+ 			<!--<tx:method name="add*" propagation="REQUIRED"/>
+ 			<tx:method name="del*" propagation="REQUIRED"/>
+ 			<tx:method name="update*" propagation="REQUIRED"/>
+ 			<tx:method name="submit*" propagation="REQUIRED"/>
+ 			-->
+ 			<tx:method name="find*" read-only="true"/>
+ 			<tx:method name="search*" read-only="true"/>
+ 		</tx:attributes>
+ 	</tx:advice>
+ 	
+ 	<!-- 配置哪些类哪些方法使用事务 -->
+ 	<aop:config>
+ 		<aop:pointcut id="allServiceMethod" expression="execution(* com.fnst.biz.order.service.*.*(..))"/>
+ 		<aop:advisor advice-ref="txAdvice" pointcut-ref="allServiceMethod"/>
+ 	</aop:config>
+	
+	<bean id="memberManager" class="com.fnst.biz.order.service.impl.MemberManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	    <property name="emailManager" ref="emailManager"></property>
+	</bean>
+	<bean id="MemberAction" class="com.fnst.biz.order.action.MemberAction" scope="prototype">
+	   <property name="memberManager" ref="memberManager"></property>
+	   <property name="foodManager" ref="foodManager"></property>
+	   <property name="orderManager" ref="orderManager"></property>
+	</bean>
+	
+	<bean id="restManager" class="com.fnst.biz.order.service.impl.RestManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="RestAction" class="com.fnst.biz.order.action.RestAction" scope="prototype">
+	   <property name="restManager" ref="restManager"></property>
+	</bean>
+	
+	<bean id="foodManager" class="com.fnst.biz.order.service.impl.FoodManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="FoodAction" class="com.fnst.biz.order.action.FoodAction" scope="prototype">
+	   <property name="foodManager" ref="foodManager"></property>
+	   <property name="restManager" ref="restManager"></property>
+	</bean>
+	
+	<bean id="orderManager" class="com.fnst.biz.order.service.impl.OrderManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	   <property name="emailManager" ref="emailManager"></property>
+	</bean>
+	
+	<bean id="OrderAction" class="com.fnst.biz.order.action.OrderAction" scope="prototype">
+	   <property name="orderManager" ref="orderManager"></property>
+	   <property name="orderTime">
+	      <value>10:30:00</value>
+	   </property>
+	</bean>
+	
+	<bean id="accHisManager" class="com.fnst.biz.order.service.impl.AccHisManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	    <property name="emailManager" ref="emailManager"></property>
+	</bean>
+	
+	<bean id="AccountAction" class="com.fnst.biz.order.action.AccountAction" scope="prototype">
+	   <property name="accHisManager" ref="accHisManager"></property>
+	   <property name="memberManager" ref="memberManager"></property>
+	</bean>
+	
+	<bean id="supperManager" class="com.fnst.biz.order.service.impl.SupperManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="groupManager" class ="com.fnst.biz.order.service.impl.GroupManagerImpl">
+	   <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="SupperAction" class="com.fnst.biz.order.action.SupperAction" scope="prototype">
+	   <property name="memberManager" ref="memberManager"></property>
+	   <property name="supperManager" ref="supperManager"></property>
+	   <property name="groupManager" ref="groupManager"></property>
+	   <property name="orderTime">
+	      <value>16:30:00</value>
+	   </property>
+	</bean>
+	<bean id="SupperFunction" class="com.fnst.biz.order.util.SupperFuction">
+	    <property name="supperManager" ref="supperManager"></property>
+	</bean>
+	<bean id="mailSender" class="com.fnst.biz.order.util.SimpleMailSender"></bean>
+	
+	<bean id="emailManager" class="com.fnst.biz.order.service.impl.EmailManagerImpl" scope="prototype">
+	    <property name="sessionFactory" ref="sessionFactory"></property>
+	    <property name="memberManager" ref="memberManager"></property>
+	   <property name="mailSender" ref="mailSender"></property>
+	   <property name="managerEmail">
+	     <value>zhuangym@cn.fujitsu.com</value>
+	   </property>
+	   <property name="serverhost">
+	     <value>http://10.167.158.64:28282/WebOrder/</value>
+	   </property>
+	   <property name="mailServerHost">
+	    <value>smtp.fnst.cn.fujitsu.com</value>
+	   </property>   
+	   <property name="mailServerPort">
+	     <value>25</value>
+	   </property>   
+	   <property name="fromAddress">
+	     <value>zhuangym@cn.fujitsu.com</value>
+	   </property> 
+	   <property name="userName">
+	     <value>zhuangym@cn.fujitsu.com</value>
+	   </property>
+	    <property name="password">
+	     <value>fnst123</value>
+	   </property>
+	</bean>
+	</beans>
