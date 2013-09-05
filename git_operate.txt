@@ -1,0 +1,19 @@
+﻿1、新建目录
+2、git init
+3、git remote add origin ***(github 地址)
+
+4、config文件中追加
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
+5、git pull
+6、git add .
+7、git commit -m 'Test'
+8、git push -u origin master
+
+
+代理设置：
+export http_proxy='10.167.129.20:8080'
+export https_proxy='10.167.129.20:8080'
+export ftp_proxy='10.167.129.20:8080'
